@@ -1,0 +1,16 @@
+# Datasets
+data/*.csv
+
+# Python/Jupyter
+__pycache__/
+.ipynb_checkpoints/
+*.py[cod]
+*$py.class
+
+# Models
+models/*.pkl
+models/*.h5
+
+# OS Files
+.DS_Store
+Thumbs.db
