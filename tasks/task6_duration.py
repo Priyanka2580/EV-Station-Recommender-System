@@ -11,7 +11,7 @@ def predict_duration(df, duration_model):
         return df_copy
         
     # Select features required by refined Model C
-    features = ['power_output_kw', 'charger_type']
+    features = ['power_output_kw', 'utilization_rate', 'ports_occupied', 'charger_type']
     
     # Predict
     df_copy['predicted_duration_mins'] = duration_model.predict(df_copy[features])
