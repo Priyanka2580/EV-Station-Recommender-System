@@ -95,16 +95,28 @@ def load_data():
     
     # Download dataset from Kaggle if it doesn't exist
     if not os.path.exists(data_path):
-        st.info("Downloading dataset from Kaggle... Please wait.")
-        os.makedirs('data', exist_ok=True)
-        # Assuming the dataset slug is based on user history context
-        dataset_slug = "priyankag/ev-charging-station-availability-tracking" # Fallback guess
-        # Actually, let's execute the Kaggle CLI
-        try:
-            subprocess.run(["kaggle", "datasets", "download", "-d", "likithagedipudi/ev-charging-station-availability-tracking", "-p", "data", "--unzip"], check=True)
-            # If the dataset slug is different, the user will need to adjust it or provide it.
-        except Exception as e:
-            st.warning(f"Failed to download using Kaggle CLI. Make sure KAGGLE_USERNAME and KAGGLE_KEY are set. Error: {e}")
+        with st.spinner("Downloading dataset from Kaggle... This may take up to a minute."):
+            os.makedirs('data', exist_ok=True)
+            try:
+                # Use python -m to ensure kaggle is found in the path
+                subprocess.run(["python", "-m", "kaggle", "datasets", "download", "-d", "likithagedipudi/ev-charging-station-availability-tracking", "-p", "data", "--unzip"], check=True)
+                
+                # Check for any .csv file in the data folder and rename it to ev_stations.csv
+                import glob
+                csv_files = glob.glob('data/*.csv')
+                for f in csv_files:
+                    f_norm = f.replace('\\', '/')
+                    if f_norm != data_path:
+                        os.rename(f, data_path)
+                        break
+                        
+            except Exception as e:
+                st.error(f"Failed to download using Kaggle CLI. Make sure KAGGLE_USERNAME and KAGGLE_KEY are set correctly on Render. Error: {e}")
+                st.stop()
+                
+    if not os.path.exists(data_path):
+        st.error("No CSV file found in the data directory after download.")
+        st.stop()
             
     df = pd.read_csv(data_path)
     df['timestamp'] = pd.to_datetime(df['timestamp'])
