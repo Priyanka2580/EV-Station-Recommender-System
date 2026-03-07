@@ -98,14 +98,11 @@ def load_data():
         with st.spinner("Downloading dataset from Kaggle... This may take up to a minute."):
             os.makedirs('data', exist_ok=True)
             try:
-                result = subprocess.run(
-                    ["kaggle", "datasets", "download", "-d", "likithagedipudi/ev-charging-station-availability-tracking", "-p", "data", "--unzip"], 
-                    capture_output=True, text=True
-                )
+                # Use Kaggle Python API directly
+                import kaggle
+                kaggle.api.authenticate()
+                kaggle.api.dataset_download_cli("likithagedipudi/ev-charging-station-availability-tracking", path="data", unzip=True)
                 
-                if result.returncode != 0:
-                    raise Exception(f"Kaggle Output: {result.stdout}\nKaggle Error: {result.stderr}")
-                    
                 # Check for any .csv file in the data folder and rename it to ev_stations.csv
                 import glob
                 csv_files = glob.glob('data/*.csv')
