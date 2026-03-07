@@ -99,8 +99,14 @@ def load_data():
             os.makedirs('data', exist_ok=True)
             try:
                 # Use python -m to ensure kaggle is found in the path
-                subprocess.run(["python", "-m", "kaggle", "datasets", "download", "-d", "likithagedipudi/ev-charging-station-availability-tracking", "-p", "data", "--unzip"], check=True)
+                result = subprocess.run(
+                    ["python", "-m", "kaggle", "datasets", "download", "-d", "likithagedipudi/ev-charging-station-availability-tracking", "-p", "data", "--unzip"], 
+                    capture_output=True, text=True
+                )
                 
+                if result.returncode != 0:
+                    raise Exception(f"Kaggle Output: {result.stdout}\nKaggle Error: {result.stderr}")
+                    
                 # Check for any .csv file in the data folder and rename it to ev_stations.csv
                 import glob
                 csv_files = glob.glob('data/*.csv')
