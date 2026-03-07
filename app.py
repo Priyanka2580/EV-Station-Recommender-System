@@ -101,7 +101,7 @@ def load_data():
         dataset_slug = "priyankag/ev-charging-station-availability-tracking" # Fallback guess
         # Actually, let's execute the Kaggle CLI
         try:
-            subprocess.run(["kaggle", "datasets", "download", "-d", "priyankasrc/ev-charging-station-availability-tracking", "-p", "data", "--unzip"], check=True)
+            subprocess.run(["kaggle", "datasets", "download", "-d", "likithagedipudi/ev-charging-station-availability-tracking", "-p", "data", "--unzip"], check=True)
             # If the dataset slug is different, the user will need to adjust it or provide it.
         except Exception as e:
             st.warning(f"Failed to download using Kaggle CLI. Make sure KAGGLE_USERNAME and KAGGLE_KEY are set. Error: {e}")
