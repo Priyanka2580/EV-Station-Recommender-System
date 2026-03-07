@@ -91,7 +91,7 @@ import subprocess
 
 @st.cache_data
 def load_data():
-    data_path = 'data/ev_stations.csv'
+    data_path = 'data/ev_stations.parquet'
     
     # Download dataset from Kaggle if it doesn't exist
     if not os.path.exists(data_path):
@@ -103,24 +103,24 @@ def load_data():
                 kaggle.api.authenticate()
                 kaggle.api.dataset_download_cli("likithagedipudi/ev-charging-station-availability-tracking", path="data", unzip=True)
                 
-                # Check for any .csv file in the data folder and rename it to ev_stations.csv
+                # Convert the downloaded .csv file to .parquet and remove the CSV
                 import glob
                 csv_files = glob.glob('data/*.csv')
                 for f in csv_files:
-                    f_norm = f.replace('\\', '/')
-                    if f_norm != data_path:
-                        os.rename(f, data_path)
-                        break
+                    temp_df = pd.read_csv(f)
+                    temp_df.to_parquet(data_path, index=False)
+                    os.remove(f)
+                    break
                         
             except Exception as e:
                 st.error(f"Failed to download using Kaggle CLI. Make sure KAGGLE_USERNAME and KAGGLE_KEY are set correctly on Render. Error: {e}")
                 st.stop()
                 
     if not os.path.exists(data_path):
-        st.error("No CSV file found in the data directory after download.")
+        st.error("No dataset found in the data directory after download.")
         st.stop()
             
-    df = pd.read_csv(data_path)
+    df = pd.read_parquet(data_path)
     df['timestamp'] = pd.to_datetime(df['timestamp'])
     df = df.sort_values('timestamp', ascending=False)
     df = df.drop_duplicates(subset=['station_id'], keep='first')
