@@ -86,38 +86,14 @@ def load_models():
         st.error(f"Models not found. Please run train_models.ipynb first. Error: {str(e)}")
         st.stop()
 
-import zipfile
-import subprocess
-
 @st.cache_data
 def load_data():
     data_path = 'data/ev_stations.parquet'
-    
-    # Download dataset from Kaggle if it doesn't exist
     if not os.path.exists(data_path):
-        with st.spinner("Downloading dataset from Kaggle... This may take up to a minute."):
-            os.makedirs('data', exist_ok=True)
-            try:
-                # Use Kaggle Python API directly
-                import kaggle
-                kaggle.api.authenticate()
-                kaggle.api.dataset_download_cli("likithagedipudi/ev-charging-station-availability-tracking", path="data", unzip=True)
-                
-                # Convert the downloaded .csv file to .parquet and remove the CSV
-                import glob
-                csv_files = glob.glob('data/*.csv')
-                for f in csv_files:
-                    temp_df = pd.read_csv(f)
-                    temp_df.to_parquet(data_path, index=False)
-                    os.remove(f)
-                    break
-                        
-            except Exception as e:
-                st.error(f"Failed to download using Kaggle CLI. Make sure KAGGLE_USERNAME and KAGGLE_KEY are set correctly on Render. Error: {e}")
-                st.stop()
-                
-    if not os.path.exists(data_path):
-        st.error("No dataset found in the data directory after download.")
+        st.error(
+            "Dataset file 'data/ev_stations.parquet' not found. "
+            "Please upload or place the preprocessed dataset in the 'data' folder on the server."
+        )
         st.stop()
             
     df = pd.read_parquet(data_path)
