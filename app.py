@@ -86,9 +86,27 @@ def load_models():
         st.error(f"Models not found. Please run train_models.ipynb first. Error: {str(e)}")
         st.stop()
 
+import zipfile
+import subprocess
+
 @st.cache_data
 def load_data():
-    df = pd.read_csv('data/ev_stations.csv')
+    data_path = 'data/ev_stations.csv'
+    
+    # Download dataset from Kaggle if it doesn't exist
+    if not os.path.exists(data_path):
+        st.info("Downloading dataset from Kaggle... Please wait.")
+        os.makedirs('data', exist_ok=True)
+        # Assuming the dataset slug is based on user history context
+        dataset_slug = "priyankag/ev-charging-station-availability-tracking" # Fallback guess
+        # Actually, let's execute the Kaggle CLI
+        try:
+            subprocess.run(["kaggle", "datasets", "download", "-d", "priyankasrc/ev-charging-station-availability-tracking", "-p", "data", "--unzip"], check=True)
+            # If the dataset slug is different, the user will need to adjust it or provide it.
+        except Exception as e:
+            st.warning(f"Failed to download using Kaggle CLI. Make sure KAGGLE_USERNAME and KAGGLE_KEY are set. Error: {e}")
+            
+    df = pd.read_csv(data_path)
     df['timestamp'] = pd.to_datetime(df['timestamp'])
     df = df.sort_values('timestamp', ascending=False)
     df = df.drop_duplicates(subset=['station_id'], keep='first')
