@@ -98,9 +98,8 @@ def load_data():
         with st.spinner("Downloading dataset from Kaggle... This may take up to a minute."):
             os.makedirs('data', exist_ok=True)
             try:
-                # Use python -m to ensure kaggle is found in the path
                 result = subprocess.run(
-                    ["python", "-m", "kaggle", "datasets", "download", "-d", "likithagedipudi/ev-charging-station-availability-tracking", "-p", "data", "--unzip"], 
+                    ["kaggle", "datasets", "download", "-d", "likithagedipudi/ev-charging-station-availability-tracking", "-p", "data", "--unzip"], 
                     capture_output=True, text=True
                 )
                 
