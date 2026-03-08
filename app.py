@@ -1,14 +1,33 @@
 # Run with: streamlit run app.py
 # Requires: pip install streamlit joblib pandas scikit-learn
 
-import streamlit as st
-import pandas as pd
-import joblib
+import sys
+import traceback
+
+print("=== App Starting ===", flush=True)
+
+try:
+    import streamlit as st
+    print("=== Streamlit imported ===", flush=True)
+    
+    import pandas as pd
+    print("=== Pandas imported ===", flush=True)
+    
+    import joblib
+    print("=== Joblib imported ===", flush=True)
+    
+    from tasks.task1_filter import filter_by_region
+    print("=== Tasks imported ===", flush=True)
+
+except Exception as e:
+    print(f"=== IMPORT ERROR: {e} ===", flush=True)
+    traceback.print_exc()
+    sys.exit(1)
+
 import os
 from datetime import datetime
 
 # Import task functions
-from tasks.task1_filter import filter_by_region
 from tasks.task2_hardware import hardware_compatibility
 from tasks.task3_wait_time import predict_wait_time
 from tasks.task4_high_utilization import predict_high_utilization
