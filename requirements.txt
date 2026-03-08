@@ -7,6 +7,6 @@ seaborn
 ipykernel
 xgboost
 lightgbm
-streamlit
+streamlit>=1.33
 kaggle
 altair==4.2.2
