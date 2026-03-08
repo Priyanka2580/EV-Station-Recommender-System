@@ -101,8 +101,35 @@ def load_models():
         duration_model = joblib.load('models/duration_model.pkl')
         price_model    = joblib.load('models/price_model.pkl')
         return wait_model, peak_model, duration_model, price_model
+    except FileNotFoundError as e:
+        # Model files are completely missing from the repository
+        st.error(
+            "Model files are missing in the `models/` folder.\n\n"
+            "Please run your training notebook locally to generate:\n"
+            "- `models/wait_time_model.pkl`\n"
+            "- `models/high_utilization_model.pkl`\n"
+            "- `models/duration_model.pkl`\n"
+            "- `models/price_model.pkl`\n"
+            "and then commit and push those files to GitHub."
+        )
+        st.stop()
     except Exception as e:
-        st.error(f"Models not found. Please run train_models.ipynb first. Error: {str(e)}")
+        # Typically caused by scikit-learn version mismatch when unpickling
+        st.error(
+            "Failed to load the pre-trained models.\n\n"
+            "This usually happens when the models were trained with a "
+            "different version of scikit-learn than the one used in this app."
+        )
+        st.info(
+            "How to fix it properly so the app runs:\n"
+            "1. Create or activate a local environment that uses the SAME "
+            "version as in `requirements.txt` (currently `scikit-learn==1.7.2`).\n"
+            "2. Re-run your training notebook (e.g. `train_models.ipynb`) to "
+            "regenerate all `.pkl` files in the `models/` folder.\n"
+            "3. Commit and push the updated `.pkl` files to GitHub.\n"
+            "4. Restart the Streamlit Community Cloud app."
+        )
+        st.error(f"Technical details: {type(e).__name__}: {e}")
         st.stop()
 
 @st.cache_data
