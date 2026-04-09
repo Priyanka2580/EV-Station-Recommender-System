@@ -11,8 +11,11 @@ def predict_wait_time(df, wait_model):
     if df_copy.empty:
         return df_copy
         
-    # Select features required by refined Model A
-    features = ['ports_out_of_service', 'utilization_rate', 'traffic_congestion_index']
+    # Features required by Model A (Structural Risk Focus)
+    features = [
+        'power_output_kw', 'ports_total', 'traffic_congestion_index', 'is_peak_hour',
+        'charger_type', 'pricing_type'
+    ]
     
     # Predict queue probability (class 1)
     df_copy['queue_probability'] = wait_model.predict_proba(df_copy[features])[:, 1]

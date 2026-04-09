@@ -12,9 +12,9 @@ def estimate_cost(df, price_model):
         return df_copy
 
     # --- Part A: Price Prediction (Model D) ---
-    # Features required by Model D
+    # Features required by Model D (Structural/Economic Focus)
     price_features = [
-        'hour_of_day', 'is_peak_hour', 'utilization_rate', 'power_output_kw', 'ports_total',
+        'hour_of_day', 'is_peak_hour', 'power_output_kw', 'ports_total',
         'charger_type', 'pricing_type', 'network'
     ]
     

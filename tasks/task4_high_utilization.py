@@ -14,10 +14,9 @@ def predict_high_utilization(df, peak_model, day_of_week, hour_of_day):
     df_copy['day_of_week'] = day_of_week
     df_copy['hour_of_day'] = hour_of_day
     
-    # Select features required by Model B
+    # Features required by Model B (Behavioral Demand Focus)
     features = [
-        'hour_of_day', 'day_of_week', 'traffic_congestion_index', 
-        'ports_occupied', 'ports_total', 'ports_out_of_service'
+        'hour_of_day', 'day_of_week', 'traffic_congestion_index', 'is_peak_hour'
     ]
     
     # Predict probability of high utilization (class 1)
