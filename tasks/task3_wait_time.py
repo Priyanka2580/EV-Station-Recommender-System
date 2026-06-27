@@ -13,8 +13,8 @@ def predict_wait_time(df, wait_model):
         
     # Features required by Model A (Structural Risk Focus)
     features = [
-        'power_output_kw', 'ports_total', 'traffic_congestion_index', 'is_peak_hour',
-        'charger_type', 'pricing_type'
+        'power_output_kw', 'ports_total', 'traffic_congestion_index', 
+        'is_peak_hour','charger_type', 'pricing_type'
     ]
     
     # Predict queue probability (class 1)
