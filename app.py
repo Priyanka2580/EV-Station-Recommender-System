@@ -1,6 +1,3 @@
-# Run with: streamlit run app.py
-# Requires: pip install streamlit joblib pandas scikit-learn
-
 import sys
 import traceback
 
@@ -329,7 +326,7 @@ if find_button:
             st.exception(e)
 else:
     # Initial state
-    st.info("👈 Use the sidebar to set your preferences and find the best stations!")
+    st.info("Use the sidebar to set your preferences and find the best stations!")
     
     # Show some sample data or instructions
     st.image("https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&q=80&w=2072", 

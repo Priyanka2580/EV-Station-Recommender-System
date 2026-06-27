@@ -12,18 +12,15 @@ def hybrid_ranking(df):
     if df_copy.empty:
         return df_copy
     
-    # Identity columns to keep in final output (synchronized with main.ipynb)
     identity_cols = ['station_id', 'station_name', 'city', 'state', 'network', 'charger_type', 'power_output_kw']
     
     # --- STEP 1: Create score copies for the 3 columns whose units must be preserved ---
-    # These originals will NOT be touched by the scaler.
     df_copy['duration_score']      = df_copy['predicted_duration_mins']
     df_copy['cost_score']          = df_copy['estimated_total_cost']
     df_copy['reliability_score_n'] = df_copy['reliability_score']
     
     # --- STEP 2: Normalize only the score/probability columns ---
-    # compatibility_score and probabilities are already ~0-1 so they are fine to scale directly.
-    # For the 3 new _score cols we scale in isolation to keep original cols clean.
+ 
     norm_cols = [
         'compatibility_score',
         'queue_probability',
@@ -57,7 +54,6 @@ def hybrid_ranking(df):
         df_copy[col] = 1.0 - df_copy[col]
     
     # --- WEIGHTED SCORING ---
-    # Total weight = 1.0
     df_copy['final_score'] = (
         0.20 * df_copy['compatibility_score'] +
         0.20 * df_copy['queue_probability'] +
@@ -72,9 +68,9 @@ def hybrid_ranking(df):
     output_cols = (
         identity_cols +
         ['final_score',
-         'predicted_duration_mins',   # Original minutes (e.g. 120 mins)
-         'estimated_total_cost',      # Original dollars (e.g. $15.00)
-         'reliability_score',         # Original 0-100 score
+         'predicted_duration_mins',   
+         'estimated_total_cost',     
+         'reliability_score',        
          'queue_probability',
          'high_utilization_probability']
     )
