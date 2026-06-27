@@ -2,9 +2,9 @@ import pandas as pd
 import numpy as np
 
 def compute_reliability(df):
-    """
-    Computes a reliability score (0-100) based on availability and status.
-    """
+    
+    # Computes a reliability score (0-100) based on availability and status.
+    
     if df.empty:
         return df
         

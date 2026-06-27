@@ -1,17 +1,14 @@
 import pandas as pd
 
 def predict_wait_time(df, wait_model):
-    """
-    Uses the pre-trained wait_model (XGBClassifier) 
-    to predict the probability of a queue (has_wait).
-    Model A is refined to use: ports_out_of_service, utilization_rate, traffic_congestion_index.
-    """
+    
+    # Uses the pre-trained wait_model (XGBClassifier) to predict the probability of a queue (has_wait).
     df_copy = df.copy()
     
     if df_copy.empty:
         return df_copy
         
-    # Features required by Model A (Structural Risk Focus)
+    # Features required by Model A 
     features = [
         'power_output_kw', 'ports_total', 'traffic_congestion_index', 'is_peak_hour',
         'charger_type', 'pricing_type'

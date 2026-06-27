@@ -4,8 +4,8 @@ from sklearn.preprocessing import MinMaxScaler
 def hybrid_ranking(df):
     """
     Normalizes features and computes a weighted final score for ranking.
-    Original display columns (duration_mins, total_cost, reliability_score)
-    are preserved; separate _score columns are created for the ranking math.
+    Original display columns (duration_mins, total_cost, reliability_score) 
+    are preserved, separate _score columns are created for the ranking math.
     """
     df_copy = df.copy()
     

@@ -10,6 +10,7 @@ __pycache__/
 # Models
 # models/*.pkl
 # models/*.h5
+models/train_models_gridsearch.ipynb
 
 # OS Files
 .DS_Store

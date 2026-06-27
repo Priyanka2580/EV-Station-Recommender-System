@@ -1,10 +1,8 @@
 import pandas as pd
 
 def predict_duration(df, duration_model):
-    """
-    Uses the pre-trained duration_model to predict average session duration.
-    Model C is now refined to use only hardware features: charger_type and power_output_kw.
-    """
+    
+    # Uses the pre-trained model C to predict average session duration.
     df_copy = df.copy() 
     
     if df_copy.empty:

@@ -1,32 +1,20 @@
-# EV Charging Station Recommender Backend Pipeline
+# EV Charging Station Recommender
 
-This is a complete backend data processing and ML pipeline in Python for recommending EV charging stations based on various parameters like wait time, reliability, and cost.
+A  machine-learning pipeline that recommends the best EV charging stations for an user based on location, hardware compatibility, predicted wait time, utilization, reliability, session duration, and cost. The pipeline is exposed through an interactive Streamlit app.
 
-## Project Folder Structure
-- `main.ipynb`: Runs the full pipeline.
-- `data/`: Contains the dataset `ev_stations.csv`.
-- `models/`: Contains the training notebook and saved `.pkl` models.
-- `tasks/`: Individual notebooks for each task in the pipeline.
-- `requirements.txt`: Project dependencies.
+## How it works
 
-## Setup Instructions
+The recommender runs as a sequential pipeline that narrows down and scores candidate stations step by step. It starts by filtering stations to the user's chosen city and state, then filters by connector type and minimum power output before scoring hardware fit. From there, machine learning models predict the likelihood of a wait and the expected utilization at the requested day and time, while a rule-based score captures station reliability, and further models estimate session duration and dynamic pricing to arrive at a total cost. All these scores are normalized and combined into a single weighted score, with the top 5 stations returned as recommendations. The underlying dataset has around 1.3 million time-stamped station-status records covering location, hardware specs, live status, pricing, and contextual signals like traffic and peak hours.
 
-1. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+## Running the app
 
-2. Place dataset at:
-   `data/ev_stations.csv` (Automatically handled if already present in root as `ev_charging_station_data.csv`)
-
-3. Train models (runs EDA, feature engineering, GridSearchCV, saves .pkl files):
-   Open `models/train_models.ipynb` and run all cells.
-
-4. Run the full pipeline:
-   Open `main.ipynb` and run all cells.
+Launch the interactive Streamlit app and pick a city, charger type, minimum power, preferred network, and day/time in the sidebar, then click *Find Best Stations* to see the top 5 ranked recommendations with cost, duration, and match-score breakdowns. A one-shot script is also available for quick debugging or scripted runs, printing the ranked results straight to the console based on a small set of query parameters.
 
 ## Features
-- Comprehensive EDA and automated model training with GridSearchCV.
-- 8-stage pipeline from filtering to hybrid ranking.
-- Overfitting detection and mitigation.
-- Self-contained ML pipelines using `scikit-learn` Pipelines.
+
+- Sequential, multi-stage pipeline from regional filtering to hybrid ranking.
+- Trained ML models covering queueing, utilization, session duration, and dynamic pricing.
+- Algorithm selection chosen by comparison across XGBoost, LightGBM, and Random Forest.
+- Leakage-free train/validation/test methodology with explicit overfitting checks.
+- Self-contained, reusable scikit-learn pipelines for preprocessing and inference.
+- Interactive Streamlit front-end with live progress feedback and ranked result cards.
