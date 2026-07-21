@@ -96,17 +96,15 @@ st.markdown("""
 @st.cache_resource
 def load_models():
     try:
-        wait_model     = joblib.load('models/wait_time_model.pkl')
         peak_model     = joblib.load('models/high_utilization_model.pkl')
         duration_model = joblib.load('models/duration_model.pkl')
         price_model    = joblib.load('models/price_model.pkl')
-        return wait_model, peak_model, duration_model, price_model
+        return peak_model, duration_model, price_model
     except FileNotFoundError as e:
         # Model files are completely missing from the repository
         st.error(
             "Model files are missing in the `models/` folder.\n\n"
             "Please run your training notebook locally to generate:\n"
-            "- `models/wait_time_model.pkl`\n"
             "- `models/high_utilization_model.pkl`\n"
             "- `models/duration_model.pkl`\n"
             "- `models/price_model.pkl`\n"
@@ -214,7 +212,7 @@ if find_button:
         
         try:
             # Load Resources
-            wait_model, peak_model, duration_model, price_model = load_models()
+            peak_model, duration_model, price_model = load_models()
             df = load_data()
             
             # Task 1: Filter by Region
@@ -238,10 +236,25 @@ if find_button:
                 st.stop()
             
             stations_found_count = len(df)
-            
+
+            # Inject user-selected time context before time-dependent predictions
+            df['hour_of_day'] = hour_of_day
+            df['day_of_week'] = day_of_week
+            df['is_peak_hour'] = df['hour_of_day'].apply(lambda x: 1 if x in [7, 8, 9, 17, 18, 19, 20] else 0)
+
+            # Fix stale traffic_congestion_index — replace with the correct value for the user's selected hour
+            hourly_congestion = {
+                0: 2.0, 1: 2.0, 2: 2.0, 3: 2.0, 4: 2.0, 5: 2.0,
+                6: 5.0, 7: 8.0, 8: 8.0, 9: 8.0, 10: 5.0,
+                11: 5.0, 12: 5.0, 13: 5.0, 14: 5.0, 15: 5.0, 16: 5.0,
+                17: 8.0, 18: 8.0, 19: 8.0, 20: 5.0,
+                21: 5.0, 22: 5.0, 23: 5.0
+            }
+            df['traffic_congestion_index'] = hourly_congestion[hour_of_day]
+
             # Task 3: Predict Wait Time
             status_text.text("Predicting wait times...")
-            df = predict_wait_time(df, wait_model)
+            df = predict_wait_time(df)
             progress_bar.progress(37)
             
             # Task 4: Predict High Utilization

@@ -41,8 +41,7 @@ def load_pipeline_data(filepath):
 def ensure_models():
     # Synchronized with Original Filenames as requested
     model_paths = [
-        'models/wait_time_model.pkl', 
-        'models/high_utilization_model.pkl', 
+        'models/high_utilization_model.pkl',
         'models/duration_model.pkl',
         'models/price_model.pkl'
     ]
@@ -53,7 +52,6 @@ if not ensure_models():
 else:
     # --- LOAD DATA & MODELS ---
     df = load_pipeline_data('data/ev_stations.parquet')
-    wait_model = joblib.load('models/wait_time_model.pkl')
     peak_model = joblib.load('models/high_utilization_model.pkl')
     duration_model = joblib.load('models/duration_model.pkl')
     price_model = joblib.load('models/price_model.pkl')
@@ -61,8 +59,18 @@ else:
     # --- INJECT USER CONTEXT ---
     df['hour_of_day'] = USER_INPUT['hour_of_day']
     df['day_of_week'] = USER_INPUT['day_of_week']
-    # Derive is_peak_hour context for Models A, B, and D
-    df['is_peak_hour'] = df['hour_of_day'].apply(lambda x: 1 if (x >= 8 and x <= 10) or (x >= 16 and x <= 19) else 0)
+    # Derive is_peak_hour context for the high-utilization and price models
+    df['is_peak_hour'] = df['hour_of_day'].apply(lambda x: 1 if x in [7, 8, 9, 17, 18, 19, 20] else 0)
+
+    # Fix stale traffic_congestion_index — replace with the correct value for the user's selected hour
+    hourly_congestion = {
+        0: 2.0, 1: 2.0, 2: 2.0, 3: 2.0, 4: 2.0, 5: 2.0,
+        6: 5.0, 7: 8.0, 8: 8.0, 9: 8.0, 10: 5.0,
+        11: 5.0, 12: 5.0, 13: 5.0, 14: 5.0, 15: 5.0, 16: 5.0,
+        17: 8.0, 18: 8.0, 19: 8.0, 20: 5.0,
+        21: 5.0, 22: 5.0, 23: 5.0
+    }
+    df['traffic_congestion_index'] = hourly_congestion[USER_INPUT['hour_of_day']]
     
     print("Starting Sequential Pipeline (Production Python Script)...")
     
@@ -81,9 +89,9 @@ else:
         print(f"Task 2 Complete: {len(df)} stations remain.")
         
         if not df.empty:
-            # Task 3: Wait Time (Model A)
+            # Task 3: Wait Time (rule-based)
             exec(open('tasks/task3_wait_time.py').read())
-            df = predict_wait_time(df, wait_model)
+            df = predict_wait_time(df)
             print("Task 3 Complete: Queue probabilities predicted.")
             
             # Task 4: High Utilization (Model B)

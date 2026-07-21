@@ -4,7 +4,7 @@ A  machine-learning pipeline that recommends the best EV charging stations for a
 
 ## How it works
 
-The recommender runs as a sequential pipeline that narrows down and scores candidate stations step by step. It starts by filtering stations to the user's chosen city and state, then filters by connector type and minimum power output before scoring hardware fit. From there, machine learning models predict the likelihood of a wait and the expected utilization at the requested day and time, while a rule-based score captures station reliability, and further models estimate session duration and dynamic pricing to arrive at a total cost. All these scores are normalized and combined into a single weighted score, with the top 5 stations returned as recommendations. The underlying dataset has around 1.3 million time-stamped station-status records covering location, hardware specs, live status, pricing, and contextual signals like traffic and peak hours.
+The recommender runs as a sequential pipeline that narrows down and scores candidate stations step by step. It starts by filtering stations to the user's chosen city and state, then filters by connector type and minimum power output before scoring hardware fit. From there, a rule-based check determines the likelihood of a wait while a machine learning model predicts the expected utilization at the requested day and time, a separate rule-based score captures station reliability, and further models estimate session duration and dynamic pricing to arrive at a total cost. All these scores are normalized and combined into a single weighted score, with the top 5 stations returned as recommendations. The underlying dataset has around 1.3 million time-stamped station-status records covering location, hardware specs, live status, pricing, and contextual signals like traffic and peak hours.
 
 ## Running the app
 
@@ -13,7 +13,7 @@ Launch the interactive Streamlit app and pick a city, charger type, minimum powe
 ## Features
 
 - Sequential, multi-stage pipeline from regional filtering to hybrid ranking.
-- Trained ML models covering queueing, utilization, session duration, and dynamic pricing.
+- Trained ML models covering utilization, session duration, and dynamic pricing, plus a rule-based wait-time check.
 - Algorithm selection chosen by comparison across XGBoost, LightGBM, and Random Forest.
 - Leakage-free train/validation/test methodology with explicit overfitting checks.
 - Self-contained, reusable scikit-learn pipelines for preprocessing and inference.
