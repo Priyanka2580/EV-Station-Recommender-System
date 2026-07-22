@@ -216,7 +216,7 @@ month_names = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
 ]
-month_str = st.sidebar.selectbox("Month", options=month_names, index=6)  # Default: July
+month_str = st.sidebar.select_slider("Month", options=month_names, value="July")
 month = month_names.index(month_str) + 1
 
 find_button = st.sidebar.button("⚡ Find Best Stations",
