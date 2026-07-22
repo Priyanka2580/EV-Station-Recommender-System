@@ -146,10 +146,10 @@ def load_data():
     df = df.drop_duplicates(subset=['station_id'], keep='first')
     
     cols_to_drop = [
-        'timestamp', 'latitude', 'longitude', 'location_type',
+        'timestamp', 'latitude', 'longitude',
         'amenities_nearby', 'ports_available', 'precipitation_mm',
         'temperature_f', 'weather_condition', 'gas_price_per_gallon',
-        'local_event', 'is_weekend', 'month'
+        'local_event', 'is_weekend'
     ]
     return df.drop(columns=cols_to_drop)
 
@@ -192,12 +192,19 @@ days_map = {
 }
 day_of_week = days_map[day_of_week_str]
 
-hour_of_day = st.sidebar.slider("Hour of Day", 
+hour_of_day = st.sidebar.slider("Hour of Day",
                                 min_value=0, max_value=23, value=17, step=1)
 
 # Format hour for display
 display_hour = datetime.strptime(str(hour_of_day), "%H").strftime("%I %p")
 st.sidebar.caption(f"Selected Time: {display_hour}")
+
+month_names = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+]
+month_str = st.sidebar.selectbox("Month", options=month_names, index=6)  # Default: July
+month = month_names.index(month_str) + 1
 
 find_button = st.sidebar.button("⚡ Find Best Stations",
                                type="primary",
@@ -240,6 +247,7 @@ if find_button:
             # Inject user-selected time context before time-dependent predictions
             df['hour_of_day'] = hour_of_day
             df['day_of_week'] = day_of_week
+            df['month'] = month
             df['is_peak_hour'] = df['hour_of_day'].apply(lambda x: 1 if x in [7, 8, 9, 17, 18, 19, 20] else 0)
 
             # Fix stale traffic_congestion_index — replace with the correct value for the user's selected hour
@@ -259,7 +267,7 @@ if find_button:
             
             # Task 4: Predict High Utilization
             status_text.text("Analyzing utilization...")
-            df = predict_high_utilization(df, peak_model, day_of_week, hour_of_day)
+            df = predict_high_utilization(df, peak_model, day_of_week, hour_of_day, month)
             progress_bar.progress(50)
             
             # Task 5: Compute Reliability

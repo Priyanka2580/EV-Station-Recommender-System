@@ -6,7 +6,7 @@ import pandas as pd
 # trades some precision for much better recall (~0.82) on that class.
 HIGH_UTILIZATION_THRESHOLD = 0.3
 
-def predict_high_utilization(df, peak_model, day_of_week, hour_of_day):
+def predict_high_utilization(df, peak_model, day_of_week, hour_of_day, month):
 
     # Uses the pre-trained model (LGBMClassifier) to predict the probability of high utilization (high_utilization).
     if df.empty:
@@ -17,10 +17,11 @@ def predict_high_utilization(df, peak_model, day_of_week, hour_of_day):
     # Broadcast user-supplied spatial-temporal context
     df_copy['day_of_week'] = day_of_week
     df_copy['hour_of_day'] = hour_of_day
+    df_copy['month'] = month
 
-    # Features required by Model B
+    # Features required by Model A
     features = [
-        'hour_of_day', 'day_of_week', 'traffic_congestion_index', 'is_peak_hour'
+        'hour_of_day', 'day_of_week', 'traffic_congestion_index', 'is_peak_hour', 'month', 'location_type'
     ]
 
     # Predict probability of high utilization (class 1)

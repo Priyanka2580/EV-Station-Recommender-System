@@ -10,7 +10,8 @@ USER_INPUT = {
     'min_power_kw': 50,
     'network': "ChargePoint",
     'day_of_week': 0,    # Monday
-    'hour_of_day': 17     # 5:00 PM
+    'hour_of_day': 17,    # 5:00 PM
+    'month': 7            # July
 }
 
 def load_pipeline_data(filepath):
@@ -30,9 +31,9 @@ def load_pipeline_data(filepath):
         df = df.drop_duplicates(subset=['station_id'], keep='first')
     
     cols_to_drop = [
-        'timestamp', 'latitude', 'longitude', 'location_type', 'amenities_nearby',
+        'timestamp', 'latitude', 'longitude', 'amenities_nearby',
         'ports_available', 'precipitation_mm', 'temperature_f', 'weather_condition',
-        'gas_price_per_gallon', 'local_event', 'is_weekend', 'month'
+        'gas_price_per_gallon', 'local_event', 'is_weekend'
     ]
     # Drop columns only if they exist
     existing_cols_to_drop = [c for c in cols_to_drop if c in df.columns]
@@ -59,6 +60,7 @@ else:
     # --- INJECT USER CONTEXT ---
     df['hour_of_day'] = USER_INPUT['hour_of_day']
     df['day_of_week'] = USER_INPUT['day_of_week']
+    df['month'] = USER_INPUT['month']
     # Derive is_peak_hour context for the high-utilization and price models
     df['is_peak_hour'] = df['hour_of_day'].apply(lambda x: 1 if x in [7, 8, 9, 17, 18, 19, 20] else 0)
 
@@ -94,9 +96,9 @@ else:
             df = predict_wait_time(df)
             print("Task 3 Complete: Queue probabilities predicted.")
             
-            # Task 4: High Utilization (Model B)
+            # Task 4: High Utilization (Model A)
             exec(open('tasks/task4_high_utilization.py').read())
-            df = predict_high_utilization(df, peak_model, USER_INPUT['day_of_week'], USER_INPUT['hour_of_day'])
+            df = predict_high_utilization(df, peak_model, USER_INPUT['day_of_week'], USER_INPUT['hour_of_day'], USER_INPUT['month'])
             print("Task 4 Complete: High utilization probabilities added.")
             
             # Task 5: Reliability
