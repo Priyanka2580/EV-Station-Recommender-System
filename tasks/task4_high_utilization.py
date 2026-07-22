@@ -6,6 +6,14 @@ import pandas as pd
 # trades some precision for much better recall (~0.82) on that class.
 HIGH_UTILIZATION_THRESHOLD = 0.3
 
+def get_traffic_status(prob):
+    if prob < 0.3:
+        return "Likely Available"
+    elif prob < 0.6:
+        return "Uncertain"
+    else:
+        return "Likely Busy"
+
 def predict_high_utilization(df, peak_model, day_of_week, hour_of_day, month):
 
     # Uses the pre-trained model (LGBMClassifier) to predict the probability of high utilization (high_utilization).
@@ -27,6 +35,7 @@ def predict_high_utilization(df, peak_model, day_of_week, hour_of_day, month):
     # Predict probability of high utilization (class 1)
     df_copy['high_utilization_probability'] = peak_model.predict_proba(df_copy[features])[:, 1]
     df_copy['high_utilization_flag'] = (df_copy['high_utilization_probability'] >= HIGH_UTILIZATION_THRESHOLD).astype(int)
+    df_copy['traffic_status'] = df_copy['high_utilization_probability'].apply(get_traffic_status)
 
     return df_copy
 

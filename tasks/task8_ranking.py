@@ -45,7 +45,7 @@ def hybrid_ranking(df):
     if len(df_copy) == 1:
         # MinMaxScaler fails with 1 row; assign top score manually
         df_copy['final_score'] = 1.0
-        output_cols = identity_cols + ['final_score', 'predicted_duration_mins', 'estimated_total_cost', 'reliability_score'] + ['queue_probability', 'high_utilization_probability']
+        output_cols = identity_cols + ['final_score', 'predicted_duration_mins', 'estimated_total_cost', 'reliability_score'] + ['queue_probability', 'high_utilization_probability', 'traffic_status']
         return df_copy[output_cols]
 
     # --- NORMALIZATION (only on score columns) ---
@@ -60,8 +60,8 @@ def hybrid_ranking(df):
     # Total weight = 1.0
     df_copy['final_score'] = (
         0.20 * df_copy['compatibility_score'] +
-        0.20 * df_copy['queue_probability'] +
-        0.10 * df_copy['high_utilization_probability'] +
+        0.10 * df_copy['queue_probability'] +
+        0.20 * df_copy['high_utilization_probability'] +
         0.20 * df_copy['reliability_score_n'] +
         0.10 * df_copy['duration_score'] +
         0.20 * df_copy['cost_score']
@@ -76,7 +76,8 @@ def hybrid_ranking(df):
          'estimated_total_cost',      # Original dollars (e.g. $15.00)
          'reliability_score',         # Original 0-100 score
          'queue_probability',
-         'high_utilization_probability']
+         'high_utilization_probability',
+         'traffic_status']
     )
     ranked_df = df_copy.sort_values(by='final_score', ascending=False).head(5)
     

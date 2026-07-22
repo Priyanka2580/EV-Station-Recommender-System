@@ -89,6 +89,19 @@ st.markdown("""
     .score-high { color: #00C853; }
     .score-med { color: #FF9100; }
     .score-low { color: #D50000; }
+
+    .traffic-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        color: white;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+
+    .badge-available { background-color: #00C853; }
+    .badge-uncertain { background-color: #FF9100; }
+    .badge-busy { background-color: #D50000; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -312,12 +325,18 @@ if find_button:
             st.divider()
             
             # Top 5 Cards
+            badge_class_map = {
+                "Likely Available": "badge-available",
+                "Uncertain": "badge-uncertain",
+                "Likely Busy": "badge-busy"
+            }
             for i, (idx, row) in enumerate(top_5.iterrows()):
                 with st.container():
                     # Card Header with Rank and Score
                     score = row['final_score']
                     score_color = "score-high" if score > 0.7 else "score-med" if score > 0.4 else "score-low"
-                    
+                    traffic_badge_class = badge_class_map[row['traffic_status']]
+
                     st.markdown(f"""
                         <div class="station-card">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -339,6 +358,7 @@ if find_button:
                                 <div style="flex: 1;">
                                     <p><b>Est. Cost:</b> <span class="metric-value">${row['estimated_total_cost']:.2f}</span></p>
                                     <p><b>Est. Duration:</b> <span class="metric-value">{int(row['predicted_duration_mins'])} mins</span></p>
+                                    <p><b>Station Status:</b> <span class="traffic-badge {traffic_badge_class}">{row['traffic_status']}</span></p>
                                 </div>
                             </div>
                         </div>
